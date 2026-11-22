@@ -5,9 +5,11 @@ import kagglehub
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from pathlib import Path
 
-DATA_DIR = "data"
-CSV_PATH = os.path.join(DATA_DIR, "creditcard.csv")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_ROOT / "data"
+CSV_PATH = DATA_DIR / "creditcard.csv"
 
 def is_valid_csv(path):
     """Return True if file exists and is a readable, non-empty CSV."""
@@ -21,6 +23,8 @@ def is_valid_csv(path):
         return True
     except Exception:
         return False
+
+#========================================================================
 
 def loader():
     print(f"{CSV_PATH} missing or corrupted, downloading...")
@@ -42,30 +46,45 @@ df = pd.read_csv(CSV_PATH)
 
 # df.info()
 # df.head()
+def statistics():
+    print(f"Number of Samples: {len(df)}")
+    print(f"Number of features: {df.shape[1]-1}") #'-1' is the Class column
 
+#========================================================================
 
-print(f"Number of Samples: {len(df)}")
-print(f"Number of features: {df.shape[1]-1}") #'-1' is the Class column
+def distribution():
+    labels = {0: "Normal", 1: "Fraud"}
+    count = df["Class"].value_counts()
+    for cls, n in count.items():
+        print(f"{labels[cls]} (Class {cls}): {n}  ({n/len(df)*100:.3f}%)")
 
-labels = {0: "Normal", 1: "Fraud"}
-count = df["Class"].value_counts()
-for cls, n in count.items():
-    print(f"{labels[cls]} (Class {cls}): {n}  ({n/len(df)*100:.3f}%)")
+#========================================================================
 
 #sanity checks
-print(f"inf Values: {np.isinf(df.select_dtypes(include=np.number)).sum().sum()}") #infs
-print(f"null Values: {df.isnull().sum().sum()}") #nulls
-print(f"Min Time: {df['Time'].min()}") #negative elapsed time
-print(f"Min Amount: {df['Amount'].min()}") #negative Amount 
-print(f"Min Class: {df['Class'].min()}") #negative class 
-print(f"Is time column acsending: {df['Time'].is_monotonic_increasing}") #time column is ascending? (could've read the decription but just incase)
-print(df.drop(columns=['Time', 'Amount', 'Class']).mean().describe()) #col vlues distribution (again could've read the docs)
+def MissingValues():
+    print(f"inf Values: {np.isinf(df.select_dtypes(include=np.number)).sum().sum()}") #infs
+    print(f"null Values: {df.isnull().sum().sum()}") #nulls
+    print(f"Min Time: {df['Time'].min()}") #negative elapsed time
+    print(f"Min Amount: {df['Amount'].min()}") #negative Amount 
+    print(f"Min Class: {df['Class'].min()}") #negative class 
+    print(f"Is time column acsending: {df['Time'].is_monotonic_increasing}") #time column is ascending? (could've read the decription but just incase)
+    print(df.drop(columns=['Time', 'Amount', 'Class']).mean().describe()) #col vlues distribution (again could've read the docs)
+
+#========================================================================
+
+def duplicates():
+    print(f"Number of duplicated samples: {df.duplicated().sum()}")
+    dupes = df[df.duplicated(keep=False)].sort_values(list(df.columns))
+    print(dupes['Class'].value_counts())
+
+#========================================================================
+
 
 X = df.drop(columns='Class')
 y = df['Class']
 
 
-X_test, X_train, y_train, y_test = train_test_split(
+X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     random_state=42,
@@ -73,6 +92,7 @@ X_test, X_train, y_train, y_test = train_test_split(
     shuffle=True,
     test_size=0.2
 )
+
 scaler = StandardScaler()
 X_train[['Time', 'Amount']] = scaler.fit_transform(X_train[['Time', 'Amount']])
 X_test[['Time', 'Amount']] = scaler.transform(X_test[['Time', 'Amount']])
