@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from pathlib import Path
 import pickle
 
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 CSV_PATH = DATA_DIR / "creditcard.csv"
@@ -30,32 +31,32 @@ def is_valid_csv(path):
 #========================================================================
 
 def loader():
-    print(f"{CSV_PATH} missing or corrupted, downloading...")
-    os.makedirs(DATA_DIR, exist_ok=True)
+    # handling existing dataset
+    if is_valid_csv(CSV_PATH):
+        print(f"Found valid file at {CSV_PATH}, skipping download.")
+    else:
+        print(f"{CSV_PATH} missing or corrupted, downloading...")
+        os.makedirs(DATA_DIR, exist_ok=True)
 
-    dataset_path = kagglehub.dataset_download("mlg-ulb/creditcardfraud")
-    src = os.path.join(dataset_path, "creditcard.csv")
+        dataset_path = kagglehub.dataset_download("mlg-ulb/creditcardfraud")
+        src = os.path.join(dataset_path, "creditcard.csv")
 
-    shutil.copy(src, CSV_PATH)
-    print(f"Saved to {CSV_PATH}")
-
-#handling existing dataset so it takes less time.
-if is_valid_csv(CSV_PATH):
-    print(f"Found valid file at {CSV_PATH}, skipping download.")
-else:
-  loader()
-
-df = pd.read_csv(CSV_PATH)
-
-# df.info()
-# df.head()
-def statistics():
-    print(f"Number of Samples: {len(df)}")
-    print(f"Number of features: {df.shape[1]-1}") #'-1' is the Class column
+        shutil.copy(src, CSV_PATH)
+        print(f"Saved to {CSV_PATH}")
+    # creating df
+    df =  pd.read_csv(CSV_PATH) 
+    return df
+    
 
 #========================================================================
 
-def distribution():
+def statistics():
+    print(f"Number of Samples: {len(df)}")
+    print(f"Number of features: {df.shape[1]-1}") # '-1' is the 'Class' column
+
+#========================================================================
+
+def distribution(): # incase someone's curious
     labels = {0: "Normal", 1: "Fraud"}
     count = df["Class"].value_counts()
     for cls, n in count.items():
@@ -63,15 +64,14 @@ def distribution():
 
 #========================================================================
 
-#sanity checks
+# dataset missing checks
 def MissingValues():
     print(f"inf Values: {np.isinf(df.select_dtypes(include=np.number)).sum().sum()}") #infs
-    print(f"null Values: {df.isnull().sum().sum()}") #nulls
-    print(f"Min Time: {df['Time'].min()}") #negative elapsed time
-    print(f"Min Amount: {df['Amount'].min()}") #negative Amount 
-    print(f"Min Class: {df['Class'].min()}") #negative class 
-    print(f"Is time column acsending: {df['Time'].is_monotonic_increasing}") #time column is ascending? (could've read the decription but just incase)
-    print(df.drop(columns=['Time', 'Amount', 'Class']).mean().describe()) #col vlues distribution (again could've read the docs)
+    print(f"null Values: {df.isnull().sum().sum()}") # nulls
+    print(f"Min Time: {df['Time'].min()}") # negative elapsed time
+    print(f"Min Amount: {df['Amount'].min()}") # negative Amount 
+    print(f"Is time column acsending: {df['Time'].is_monotonic_increasing}") # time column is ascending? (could've read the docs but just incase)
+    print(df.drop(columns=['Time', 'Amount', 'Class']).mean().describe()) # col values distribution (again could've read the docs)
 
 #========================================================================
 
@@ -82,25 +82,29 @@ def duplicates():
 
 #========================================================================
 
+def save_scaler(scaler, path=None, overwrite=False):
+    # if scaler found, don't touch 
+    path = path or (MODELS_DIR / "scaler.pkl")
+    if path.exists() and not overwrite:
+        print(f"scaler file already exists; pass overwrite=True to replace.")
+        return
+    # if not found, save the new one.
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    with open(path, "wb") as f:
+        pickle.dump(scaler, f)
+        
+#============================ main =======================================
+
+df = loader()
 
 X = df.drop(columns='Class')
 y = df['Class']
 
-
 X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    random_state=42,
+    X, 
+    y, 
+    test_size=0.2,
     stratify=y,
     shuffle=True,
-    test_size=0.2
+    random_state=42,
 )
-
-scaler = StandardScaler()
-scaler.fit(X_train[['Time', 'Amount']])
-
-def saveScaler(scaler):
-    MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    path = MODELS_DIR / "scaler.pkl"
-    with open(path, "wb") as f:
-        pickle.dump(scaler, f)
