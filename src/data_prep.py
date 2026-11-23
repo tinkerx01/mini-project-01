@@ -3,13 +3,16 @@ import shutil
 import pandas as pd
 import kagglehub
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from pathlib import Path
+import pickle
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 CSV_PATH = DATA_DIR / "creditcard.csv"
+MODELS_DIR = PROJECT_ROOT / "models"
+
 
 def is_valid_csv(path):
     """Return True if file exists and is a readable, non-empty CSV."""
@@ -94,5 +97,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 scaler = StandardScaler()
-X_train[['Time', 'Amount']] = scaler.fit_transform(X_train[['Time', 'Amount']])
-X_test[['Time', 'Amount']] = scaler.transform(X_test[['Time', 'Amount']])
+scaler.fit(X_train[['Time', 'Amount']])
+
+def saveScaler(scaler):
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    path = MODELS_DIR / "scaler.pkl"
+    with open(path, "wb") as f:
+        pickle.dump(scaler, f)
