@@ -80,15 +80,6 @@ def duplicates():
     dupes = df[df.duplicated(keep=False)].sort_values(list(df.columns))
     print(dupes['Class'].value_counts())
 
-#========================================================================
-
-def loadScaler(path=None):
-    path = path or (MODELS_DIR / "scaler.pkl")
-    if not path.exists():
-        raise FileNotFoundError(f"Scaler doesn't exist. Aborting...")
-    print(f"Loading scaler from {path}")
-    with open(path, "rb") as f:
-        return pickle.load(f)
 
 # ============================================================================ #
 
