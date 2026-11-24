@@ -82,7 +82,24 @@ def duplicates():
 
 #========================================================================
 
-def save_scaler(scaler, path=None, overwrite=False):
+def loadScaler(path=None):
+    path = path or (MODELS_DIR / "scaler.pkl")
+    if not path.exists():
+        raise FileNotFoundError(f"Scaler doesn't exist. Aborting...")
+    print(f"Loading scaler from {path}")
+    with open(path, "rb") as f:
+        return pickle.load(f)
+
+# ============================================================================ #
+
+def fitScaler():
+    scaler = StandardScaler()
+    scaler.fit(X_train[['Time', 'Amount']])
+    saveScaler(scaler)
+
+# ============================================================================ #
+
+def saveScaler(scaler, path=None, overwrite=False):
     # if scaler found, don't touch 
     path = path or (MODELS_DIR / "scaler.pkl")
     if path.exists() and not overwrite:
@@ -92,8 +109,19 @@ def save_scaler(scaler, path=None, overwrite=False):
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     with open(path, "wb") as f:
         pickle.dump(scaler, f)
-        
-#============================ main =======================================
+        print("saved scaler.")
+
+# ============================================================================ #
+
+def loadScaler(path=None):
+    path = path or (MODELS_DIR / "scaler.pkl")
+    if not path.exists():
+        raise FileNotFoundError(f"Scaler doesn't exist. Aborting...")
+    print(f"Loading scaler from {path}")
+    with open(path, "rb") as f:
+        return pickle.load(f)
+    
+# ----------------------------------- main ----------------------------------- #
 
 df = loader()
 
