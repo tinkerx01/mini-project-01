@@ -83,10 +83,14 @@ def duplicates():
 
 # ============================================================================ #
 
-def fitScaler():
-    scaler = StandardScaler()
-    scaler.fit(X_train[['Time', 'Amount']])
-    saveScaler(scaler)
+def fitScaler(overwrite=False):
+    path = MODELS_DIR / "scaler.pkl"
+    if path.exists() and not overwrite:
+        print(f"Scaler already exists at {path}; pass overwrite=True to refit.")
+        return
+    scaler = StandardScaler().fit(X_train[['Time', 'Amount']])
+    saveScaler(scaler, overwrite=True)
+    print(f"Fitted and saved scaler to {path}")
 
 # ============================================================================ #
 
