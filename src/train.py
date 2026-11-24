@@ -10,7 +10,7 @@ def trainModel(model, scale = True):
     print(f"training model {type(model).__name__}")
     X_train = dp.X_train.copy() # saving so we don't transform the actual X_train in data_pred. (reusability)
     if scale:
-        scaler = loadScaler()
+        scaler = dp.loadScaler()
         X_train[['Time', 'Amount']]= scaler.transform(X_train[['Time', 'Amount']])
     model.fit(X_train, dp.y_train) # fits model after/without scaling the training data
     return model
