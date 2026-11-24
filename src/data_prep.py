@@ -121,6 +121,26 @@ def loadScaler(path=None):
     with open(path, "rb") as f:
         return pickle.load(f)
     
+# ============================================================================ #
+
+def scaleX(X, scaler=None, cols=('Time', 'Amount')):
+    scaler = scaler or loadScaler()
+    X = X.copy()
+    X[list(cols)] = scaler.transform(X[list(cols)])
+    return X
+
+# ============================================================================ #
+
+def loadModel(name, path=None):
+    path = path or (MODELS_DIR / f"{name}.pkl")
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Model '{name}' not found at {path}."
+        )
+    print(f"Loading model from {path}")
+    with open(path, "rb") as f:
+        return pickle.load(f)
+    
 # ----------------------------------- main ----------------------------------- #
 
 df = loader()
