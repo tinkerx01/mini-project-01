@@ -15,7 +15,7 @@ def trainModel(model, scale = True):
     model.fit(X_train, dp.y_train) # fits model after/without scaling the training data
     return model
 
-#===================================================================
+# ============================================================================ #
 
 def saveModel(model, filename=None, overwrite=False):
     if filename is None:
