@@ -37,7 +37,7 @@ def reportTrain(model, scale=True):
 
 # ============================================================================ #
 
-def reportTest(model, scale=True):
+def reportTest(model, scale=True, sweep=False, thresholds=None):
     name = dp.modelName(model)
     model = dp.loadModel(name)  
     print(f"[TEST] evaluating {name}")
@@ -96,5 +96,24 @@ def crossValidate(model, folds=5, scale=True, save_per_fold=True, save_aggregate
 
     return {"per_fold": per_fold, "aggregate": aggregate}
 
+# ============================================================================ #
+def sweepThreshold(model, X, y, scale=True, thresholds=None):
+    if thresholds is None:
+        thresholds = np.round(np.arange(0.05, 0.96, 0.05), 2)
 
+    if scale:
+        X = dp.scaleX(X)
 
+    proba = model.predict_proba(X)[:, 1]
+
+    rows = []
+    for t in thresholds:
+        y_pred = (proba >= t).astype(int)
+        rows.append({
+            "threshold": float(t),
+            "precision": round(precision_score(y, y_pred, zero_division=0), 4),
+            "recall":    round(recall_score(y, y_pred, zero_division=0), 4),
+            "f1":        round(f1_score(y, y_pred, zero_division=0), 4),
+            "n_positive_pred": int(y_pred.sum()),
+        })
+    return rows
