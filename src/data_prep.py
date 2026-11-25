@@ -147,6 +147,19 @@ def fitScaleX(X_fit, X_apply, cols=('Time', 'Amount')):
     X_apply[list(cols)] = scaler.transform(X_apply[list(cols)])
     return scaler, X_fit, X_apply
 
+# ============================================================================ #
+
+def modelName(model):
+    name = type(model).__name__
+    params = model.get_params()
+    if name == "KNeighborsClassifier":
+        return f"{name}_k{params['n_neighbors']}"
+    if name == "DecisionTreeClassifier":
+        return f"{name}_d{params['max_depth']}"
+    if name == "LogisticRegression":
+        return f"{name}_C{params['C']}"
+    return name
+
 # ----------------------------------- main ----------------------------------- #
 
 df = loader()

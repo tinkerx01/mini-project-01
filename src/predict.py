@@ -28,7 +28,7 @@ def _evaluate(model, X, y, scale=True):
 # ============================================================================ #
 
 def reportTrain(model, scale=True):
-    name = type(model).__name__
+    name = dp.modelName(model)
     model = dp.loadModel(name)   # breaks if no model pkl
     print(f"[TRAIN] evaluating {name}")
     stats = _evaluate(model, dp.X_train, dp.y_train, scale=scale)
@@ -38,7 +38,7 @@ def reportTrain(model, scale=True):
 # ============================================================================ #
 
 def reportTest(model, scale=True):
-    name = type(model).__name__
+    name = dp.modelName(model)
     model = dp.loadModel(name)  
     print(f"[TEST] evaluating {name}")
     stats = _evaluate(model, dp.X_test, dp.y_test, scale=scale)
@@ -68,7 +68,7 @@ def _aggregate(per_fold):
 # ============================================================================ #
 
 def crossValidate(model, folds=5, scale=True, save_per_fold=True, save_aggregate=True):
-    name = type(model).__name__
+    name = dp.modelName(model)
     model = dp.loadModel(name)
 
     skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=42)
@@ -95,3 +95,6 @@ def crossValidate(model, folds=5, scale=True, save_per_fold=True, save_aggregate
         _save(f"results_cv_{name}.json", {name: aggregate})
 
     return {"per_fold": per_fold, "aggregate": aggregate}
+
+
+
