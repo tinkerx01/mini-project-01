@@ -23,7 +23,9 @@ decision tree does not care about distance. the question decision tree asks is w
 ```
 
 # 11. Mandatory Experiment 2: Hyperparameter Analysis
+- for knn
 | Parameter Value | Precision | Recall | F1 |
+|---|---|---:|---:|---:|
 |1|0.8454|0.8367|0.841|
 |5|0.9186|0.8061|0.8587|
 |20|0.8409|0.7551|0.7957|
