@@ -26,3 +26,12 @@ data for class 1 instead of finding a generalizable pattern.
 ```
 
 
+Section 3: Getting the reports on one split
+-
+```
+- Was initial hyposesis correct? yes
+- Knn with default neighbors (5) was the most reasonable.
+- f1, recall, precision
+- accuracy was very high and not possible to know if it's due to overfitting or learning
+- I still get more FN than FP which is not good and should be fixed.
+``` 
