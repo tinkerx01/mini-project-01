@@ -135,7 +135,18 @@ def loadModel(name, path=None):
     print(f"Loading model from {path}")
     with open(path, "rb") as f:
         return pickle.load(f)
-    
+
+# ---------------------------------- CV step --------------------------------- #
+
+def fitScaleX(X_fit, X_apply, cols=('Time', 'Amount')):
+    # exclusive for cross validation
+    scaler = StandardScaler().fit(X_fit[list(cols)])
+    X_fit = X_fit.copy()
+    X_apply = X_apply.copy()
+    X_fit[list(cols)] = scaler.transform(X_fit[list(cols)])
+    X_apply[list(cols)] = scaler.transform(X_apply[list(cols)])
+    return scaler, X_fit, X_apply
+
 # ----------------------------------- main ----------------------------------- #
 
 df = loader()

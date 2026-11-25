@@ -35,3 +35,12 @@ Section 3: Getting the reports on one split
 - accuracy was very high and not possible to know if it's due to overfitting or learning
 - I still get more FN than FP which is not good and should be fixed.
 ``` 
+
+Section 4: After 5 fold cv
+-
+| Model | Mean Precision | Mean Recall | Mean F1 |
+|---|---:|---:|---:|
+| Logistic Regression | 0.8752 | 0.6421 | 0.7396 |
+| KNN | 0.9269 | 0.7589 | 0.834 |
+| Decision Tree | 0.8666 | 0.7639 | 0.8112 |
+
