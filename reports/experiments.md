@@ -49,3 +49,16 @@ it decreases
 0.7 because we need smaller recall.
 - What trade-off does your chosen threshold create?
 less f1 but also less recall.
+
+# 13. Final Model Selection
+
+1. Select one final model.
+knn k=5
+2. Select an appropriate classification threshold.
+0.7
+3. Explain your decisions.
+```
+based on resulting metrics knn is the obvious choice with reasonable performance and better generalization compared the other models.
+we should keep in mind that the thresholds have noticable impact on the predictions. 
+so we will keep threshold 0.7 to reduce recall which is optimal for the fraud detection system's concern of lesser recall.
+```
