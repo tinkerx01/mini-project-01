@@ -96,6 +96,7 @@ train and use reportTest or reportTrain to see the results and save them in a JS
 
 Why is Accuracy a misleading metric for this dataset?
 because it has imbalance in classes.
+
 ---
 
 ### Question 2
